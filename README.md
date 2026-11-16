@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="docs/logo-banner.png" alt="Trading Agents logo" width="560">
-</p>
-
 <h1 align="center">Trading Agents</h1>
 
 <p align="center">
