@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+data/
+.env
+# The system's own memory — every runner grows their own brain.
+brain.json
+learn.log
+# Real-money micro test: keys and real trade records stay local, always.
+.env.local
+real_state.json
+real_log.jsonl
