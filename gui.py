@@ -564,6 +564,7 @@ aside{border-left:1px solid var(--line);padding:0}
 .q{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:10px}
 .q button{background:var(--panel);border:1px solid var(--line);color:var(--tx);border-radius:6px;padding:10px 0;font:inherit;cursor:pointer;font-size:12px}
 .q button:hover{border-color:var(--up)}
+.q span{background:var(--panel);border:1px solid var(--line);color:var(--tx);border-radius:6px;padding:10px 0;font-size:12px;text-align:center}
 .go{margin-top:14px;background:var(--btn);color:var(--up);border:1px solid #2b5642;border-radius:8px;padding:14px;display:flex;justify-content:space-between;cursor:pointer;width:100%;font:inherit}
 .fees{display:flex;gap:14px;color:var(--mut);margin:14px 0;font-size:13px;align-items:center}
 .fees .r{margin-left:auto}
@@ -604,15 +605,14 @@ footer .r{margin-left:auto;display:flex;gap:18px;align-items:center}
         </div>
       </div>
       <div class="tb">
-        <span class="tfl on" data-tf="5m" onclick="setTF('5m')">5m</span><span class="tfl" data-tf="1h" onclick="setTF('1h')">1h</span><span class="tfl" data-tf="1d" onclick="setTF('1d')">1d</span><span>|</span><span>ƒx Indicators</span><span>▾ Display Options</span><span>Council view</span>
+        <span class="tfl on" data-tf="5m" onclick="setTF('5m')">5m</span><span class="tfl" data-tf="1h" onclick="setTF('1h')">1h</span><span class="tfl" data-tf="1d" onclick="setTF('1d')">1d</span><span>|</span><span class="tfl" id="sma-btn" onclick="toggleSMA()">ƒx SMA line</span>
         <div class="r"><span>Yahoo Finance</span><span class="up">● Live</span></div>
       </div>
       <div class="chartwrap">
-        <div class="tools"><i style="color:var(--acc)">+</i><i>╱</i><i>≡</i><i>⌖</i><i>≣</i><i>T</i><i>⊕</i><i>∩</i></div>
         <div class="cv"><div class="leg"><div><span id="ct">AAPL/USD · 5m · Yahoo Finance</span> <span class="up">●</span> <span class="o mono" id="ohlc"></span></div><div class="mut" style="margin-top:6px">Volume <span class="up mono" id="volspan">–</span></div></div><canvas id="c"></canvas></div>
       </div>
-      <div class="tfoot"><span>5m</span><span>1h</span><span>1d</span><span>6mo</span><span class="r mono" id="clk">–</span></div>
-      <div class="tabs"><span class="on">Positions</span><span>Orders</span><span>History</span><div class="r"><span class="tag g" id="statustag">OPERATIONAL</span><span class="tag y">PAPER TRADING ONLY</span></div></div>
+      <div class="tfoot"><span class="r mono" id="clk">–</span></div>
+      <div class="tabs"><span class="on">Positions</span><div class="r"><span class="tag g" id="statustag">OPERATIONAL</span><span class="tag y">PAPER TRADING ONLY</span></div></div>
       <div class="tblw"><table class="mono">
         <thead><tr><th>Symbol</th><th>Qty</th><th>Avg price</th><th>Last</th><th>Value</th><th>Stop</th><th>Target</th></tr></thead>
         <tbody id="posbody"></tbody></table></div>
@@ -622,7 +622,6 @@ footer .r{margin-left:auto;display:flex;gap:18px;align-items:center}
     <aside>
       <div class="tf"><div class="on" data-tf="5m" onclick="setTF('5m')"><span>5m</span><b id="tf-5m">–</b></div><div data-tf="1h" onclick="setTF('1h')"><span>1h</span><b id="tf-1h">–</b></div><div data-tf="1d" onclick="setTF('1d')"><span>1d</span><b id="tf-1d">–</b></div><div><span>Day</span><b id="tf-day" style="color:var(--tx)">–</b></div></div>
       <div class="side">
-        <div class="seg"><div class="on">Council</div><div>Risk Guard</div></div>
         <div class="seg bs"><div class="on" id="btn-start" onclick="act('start')">START LEARNING</div><div id="btn-stop" onclick="act('stop')">Stop</div></div>
         <div style="margin-top:14px">Council vote today</div>
         <div class="in"><span id="bossline">Boss — strategy</span><span id="bosspct" style="color:var(--tx)">–</span></div>
@@ -634,17 +633,18 @@ footer .r{margin-left:auto;display:flex;gap:18px;align-items:center}
         <div class="row"><div class="box"><span>↑ TP</span><b id="rg-target">–</b></div><div class="box"><span>Value</span><b id="rg-value">–</b></div></div>
         <div class="row"><div class="box"><span>↓ SL</span><b id="rg-stop">–</b></div><div class="box"><span>Avg</span><b id="rg-avg">–</b></div></div>
       </div>
-      <div class="sec"><span>Held by the crew</span><span class="mut">⌄</span></div>
+      <div class="sec"><span>Held by the crew</span></div>
       <div id="simlist"></div>
-      <div class="sec"><span>Council of 14 agents</span><span class="mut">⌄</span></div>
+      <div class="sec"><span>Council of 14 agents</span></div>
     </aside>
   </div>
   <footer><span>Trading Agents</span><span class="up" id="footstatus">● Operational — idle</span><span>▪ Council paper terminal</span>
-    <div class="r"><span><i class="sw"></i>Paper</span><span>No broker connected</span><span>Real Yahoo data</span></div></footer>
+    <div class="r"><span>Paper</span><span>No broker connected</span><span>Real Yahoo data</span></div></footer>
 </div>
 
 <script>
-let SYM = 'AAPL', TF = '5m', STATE = null;
+let SYM = 'AAPL', TF = '5m', STATE = null, SMA_ON = false;
+function toggleSMA() { SMA_ON = !SMA_ON; document.getElementById('sma-btn').classList.toggle('on', SMA_ON); loadChart(); }
 const $ = id => document.getElementById(id);
 const money = n => '$' + Math.round(n).toLocaleString('en-US');
 const COLORS = ['#d8ff3d','#e0a33a','#6a8','#b66','#58a','#777','#ccc','#e94','#999','#a85'];
@@ -670,7 +670,7 @@ async function loadState() {
   const wv = k => w['w_' + k];
   $('bosspct').textContent = wv('strategy') ? Math.round(wv('strategy') * 100) + '% of the vote' : '–';
   $('wchips').innerHTML = ['strategy','history','pattern','regime','pressure'].map(k =>
-    `<button>${k.slice(0,4).toUpperCase()} ${wv(k) ? Math.round(wv(k) * 100) + '%' : '–'}</button>`).join('');
+    `<span>${k.slice(0,4).toUpperCase()} ${wv(k) ? Math.round(wv(k) * 100) + '%' : '–'}</span>`).join('');
   $('tk').innerHTML = s.symbols.map((sym, i) => {
     const p = s.prices[sym];
     const held = s.positions.some(x => x.symbol === sym);
@@ -767,6 +767,18 @@ async function loadChart() {
     const t = Y(Math.max(d.o, d.c)), b = Y(Math.min(d.o, d.c));
     x.fillRect(px - bw * 0.32, t, Math.max(1, bw * 0.64), Math.max(1, b - t));
   });
+  if (SMA_ON && rows.length > 5) {
+    const N = Math.min(20, rows.length);
+    x.strokeStyle = '#f5c542'; x.lineWidth = 1.5; x.beginPath();
+    let started = false;
+    rows.forEach((d, i) => {
+      if (i < N - 1) return;
+      let s = 0; for (let j = i - N + 1; j <= i; j++) s += rows[j].c;
+      const px = i * bw + bw / 2, py = Y(s / N);
+      if (!started) { x.moveTo(px, py); started = true; } else x.lineTo(px, py);
+    });
+    x.stroke(); x.lineWidth = 1;
+  }
   const ly = Y(last.c);
   x.setLineDash([2, 3]); x.strokeStyle = '#3fbf8f';
   x.beginPath(); x.moveTo(0, ly); x.lineTo(cw, ly); x.stroke(); x.setLineDash([]);
